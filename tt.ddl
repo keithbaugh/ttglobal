@@ -4,9 +4,16 @@ DROP TABLE category cascade constraints;
 DROP TABLE category_info cascade constraints;
 DROP TABLE book cascade constraints;
 DROP TABLE book_info cascade constraints;
+DROP TABLE book_prices cascade constraints;
 DROP TABLE book_categories cascade constraints;
-DROP TABLE address cascade constraints;
 DROP TABLE customer cascade constraints;
+DROP TABLE customer_addresses cascade constraints;
+DROP TABLE customer_orders cascade constraints;
+DROP TABLE order_items cascade constraints;
+DROP TABLE shipment_items cascade constraints;
+
+
+
 
 CREATE TABLE languages(
    lang_id NUMBER(3)           NOT NULL,
@@ -85,6 +92,17 @@ REFERENCES translation_status(status_id);
 
 
 
+CREATE TABLE book_prices(
+   book_id               NUMBER(10)  NOT NULL,
+   uv_price              NUMBER(8,2) NOT NULL,
+   price_valid_from      DATE        NOT NULL
+);
+
+
+ALTER TABLE book_prices ADD CONSTRAINT book_prices_pk 
+PRIMARY KEY(book_id,price_valid_from);
+
+
 CREATE TABLE book_categories(
    book_id    NUMBER(10) NOT NULL,
    cat_id     NUMBER(5)  NOT NULL
@@ -100,19 +118,85 @@ ALTER TABLE book_categories ADD CONSTRAINT book_cat_book_id_fk FOREIGN KEY(book_
 REFERENCES book(book_id);
 
 
-CREATE TABLE address(
-   address_id   NUMBER(10) NOT NULL,
-   -- Check for Boiler or shipping address types
-   address_type CHAR(1) CHECK(address_type  IN ('B','S')) NOT NULL
+CREATE TABLE customer(
+   cust_id        NUMBER(10) NOT NULL,
+   username       VARCHAR2(50) NOT NULL,
+   password_hash  VARCHAR2(50) NOT NULL,
+   account_created    DATE NOT NULL,
+   account_status VARCHAR2(20) CHECK(account_status IN ('REGISTERED','CONFIRMED','VERIFIED','QUARANTINED')) NOT NULL,
+   email_address  VARCHAR2(150) NOT NULL,
+   uv_title       VARCHAR2(20) NULL,
+   uv_first_name  VARCHAR2(50) NULL,
+   uv_middle_initials  VARCHAR2(20) NOT NULL,
+   uv_last_name   VARCHAR2(50) NOT NULL
 );
 
+ALTER TABLE customer ADD CONSTRAINT customer_pk PRIMARY KEY (cust_id);
+ALTER TABLE customer ADD CONSTRAINT customer_uq UNIQUE (username);
+
+
+CREATE TABLE customer_addresses(
+   cust_id      NUMBER(10) NOT NULL,
+   view_order   NUMBER(5)  NOT NULL,
+   address_type CHAR(1) CHECK(address_type  IN ('B','S')) NOT NULL,
+   default_address CHAR(1) CHECK(default_address IN ('Y','N'))
+);
+
+ALTER TABLE customer_addresses ADD CONSTRAINT cust_pk 
+PRIMARY KEY (cust_id, view_order) 
+DEFERRABLE INITIALLY DEFERRED;
+
+ALTER TABLE customer_addresses ADD CONSTRAINT cust_add_cust_fk
+FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
+
+CREATE TABLE customer_orders(
+   order_id NUMBER(10)    NOT NULL,
+   cust_id  NUMBER(10)    NOT NULL,
+   date_order_placed      DATE NOT NULL,
+   payment_status         VARCHAR2(20) NOT NULL
+);
+
+ALTER TABLE customer_orders ADD CONSTRAINT cust_ord_pk 
+PRIMARY KEY (order_id);
+
+ALTER TABLE customer_orders ADD CONSTRAINT cust_ord_cust_fk
+FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
+
+
+CREATE TABLE order_items(
+   order_id NUMBER(10)    NOT NULL,
+   item_id  NUMBER(5)     NOT NULL,
+   book_id  NUMBER(10)    NOT NULL,
+   quantity_ordered NUMBER(5)     NOT NULL,
+   price_when_ordered     NUMBER(8,2) NOT NULL
+);
+
+ALTER TABLE order_items ADD CONSTRAINT order_items_pk
+PRIMARY KEY (order_id, item_id);
+
+ALTER TABLE order_items ADD CONSTRAINT order_items_order_id_fk
+FOREIGN KEY (order_id) REFERENCES customer_orders(order_id);
+
+ALTER TABLE order_items ADD CONSTRAINT order_items_book_id_fk
+FOREIGN KEY (book_id) REFERENCES book(book_id);
 
 
 
 
+CREATE TABLE shipment_items(
+   shipment_id            NUMBER(10),
+   shipment_status        VARCHAR2(10),
+   shipment_date          DATE,
+   order_id NUMBER(10)    NOT NULL,
+   item_id  NUMBER(5)     NOT NULL,
+   quantity_shipped NUMBER(5)     NOT NULL
+);
 
+ALTER TABLE shipment_items ADD CONSTRAINT shipment_items_pk
+PRIMARY KEY (shipment_id)
 
-
+ALTER TABLE shipment_items ADD CONSTRAINT ship_items_ord_itm_fk
+FOREIGN KEY (order_id, item_id) REFERENCES order_items(order_id, item_id);
 
 
 
