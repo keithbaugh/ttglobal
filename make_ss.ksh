@@ -16,8 +16,8 @@ COMTAB=''
 COMMA=''
 for TAB in $TABLIST
 do
-   grep -i "CREATE TABLE $TAB" tt.ddl |sed 's/CREATE TABLE \(.*\)(/CREATE SNAPSHOT \1 REFRESH FAST AS SELECT * FROM \1\@schmast;/' >> read_only_ss.sql
-   grep -i "CREATE TABLE $TAB" tt.ddl |sed 's/CREATE TABLE \(.*\)(/CREATE SNAPSHOT LOG ON \1;/' >> master_ss_logs.sql
+   grep -i "CREATE TABLE $TAB(" tt.ddl |sed 's/CREATE TABLE \(.*\)(/CREATE SNAPSHOT \1 REFRESH FAST AS SELECT * FROM \1\@schmast;/' >> read_only_ss.sql
+   grep -i "CREATE TABLE $TAB(" tt.ddl |sed 's/CREATE TABLE \(.*\)(/CREATE SNAPSHOT LOG ON \1;/' >> master_ss_logs.sql
    COMTAB=$(echo "$COMTAB$COMMA$TAB")
    COMMA=','
 done

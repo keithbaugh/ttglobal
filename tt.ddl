@@ -10,8 +10,9 @@ DROP TABLE customer cascade constraints;
 DROP TABLE customer_addresses cascade constraints;
 DROP TABLE customer_orders cascade constraints;
 DROP TABLE order_items cascade constraints;
-DROP TABLE shipment_items cascade constraints;
-
+DROP TABLE payment_methods cascade constraints;
+DROP TABLE similar_books cascade constraints;
+DROP TABLE customer_reviews cascade constraints;
 
 
 
@@ -59,8 +60,10 @@ REFERENCES category(cat_id);
 
 
 CREATE TABLE book(
-   book_id   NUMBER(10)   NOT NULL,
-   isbn      VARCHAR2(17) NOT NULL
+   book_id       NUMBER(10)   NOT NULL,
+   sales_status  VARCHAR2(10) DEFAULT 'ONSALE' CHECK(sales_status IN ('ONSALE','BACKORDER','WITHDRAWN')) NOT NULL,
+   isbn          VARCHAR2(17) NOT NULL,
+   uv_author     VARCHAR2(100) NOT NULL
 );
 
 ALTER TABLE book ADD CONSTRAINT book_pk PRIMARY KEY (book_id);
@@ -89,6 +92,21 @@ REFERENCES book(book_id);
 
 ALTER TABLE book_info ADD CONSTRAINT book_info_xlat_stat_fk FOREIGN KEY(translation_status_id) 
 REFERENCES translation_status(status_id);
+
+
+CREATE TABLE similar_books(
+   book_id            NUMBER(10) NOT NULL,
+   similar_book_id    NUMBER(10) NOT NULL,
+   similarity_score   NUMBER(1)  NOT NULL
+);
+
+ALTER TABLE similar_books ADD CONSTRAINT similar_books_pk PRIMARY KEY (book_id,similar_book_id);
+
+ALTER TABLE similar_books ADD CONSTRAINT similar_books_src_fk FOREIGN KEY(book_id) 
+REFERENCES book(book_id);
+
+ALTER TABLE similar_books ADD CONSTRAINT similar_books_trg_fk FOREIGN KEY(similar_book_id) 
+REFERENCES book(book_id);
 
 
 
@@ -129,14 +147,17 @@ CREATE TABLE customer(
    account_created    DATE NOT NULL,
    account_status VARCHAR2(20) CHECK(account_status IN ('REGISTERED','CONFIRMED','VERIFIED','QUARANTINED')) NOT NULL,
    email_address  VARCHAR2(150) NOT NULL,
-   uv_title       VARCHAR2(20) NULL,
-   uv_first_name  VARCHAR2(50) NULL,
-   uv_middle_initials  VARCHAR2(20) NOT NULL,
-   uv_last_name   VARCHAR2(50) NOT NULL
+   ue_title       VARCHAR2(20) NULL,
+   ue_first_name  VARCHAR2(50) NULL,
+   ue_middle_initials  VARCHAR2(20) NOT NULL,
+   ue_last_name   VARCHAR2(50) NOT NULL,
+   ue_review_pseudonym   VARCHAR2(50) NOT NULL
 );
 
 ALTER TABLE customer ADD CONSTRAINT customer_pk PRIMARY KEY (cust_id);
 ALTER TABLE customer ADD CONSTRAINT customer_uq UNIQUE (username);
+
+
 
 
 CREATE TABLE customer_addresses(
@@ -161,10 +182,23 @@ DEFERRABLE INITIALLY DEFERRED;
 ALTER TABLE customer_addresses ADD CONSTRAINT cust_add_cust_fk
 FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
 
+
+CREATE TABLE payment_methods(
+   payment_method_id        NUMBER(5) NOT NULL,
+   payment_method_code      VARCHAR2(4) NOT NULL,
+   uv_payment_method_name   VARCHAR2(30) NOT NULL
+);
+
+ALTER TABLE payment_methods ADD CONSTRAINT payment_methods_pk
+PRIMARY KEY (payment_method_id);
+
+
 CREATE TABLE customer_orders(
    order_id NUMBER(10)    NOT NULL,
    cust_id  NUMBER(10)    NOT NULL,
    date_order_placed      DATE NOT NULL,
+   total_order_price      NUMBER(8,2) NOT NULL,
+   payment_method_id      NUMBER(5) NOT NULL,
    payment_status         VARCHAR2(20) NOT NULL
 );
 
@@ -173,6 +207,9 @@ PRIMARY KEY (order_id);
 
 ALTER TABLE customer_orders ADD CONSTRAINT cust_ord_cust_fk
 FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
+
+ALTER TABLE customer_orders ADD CONSTRAINT customer_orderd_paymet_fk
+FOREIGN KEY (payment_method_id) REFERENCES payment_methods(payment_method_id);
 
 
 CREATE TABLE order_items(
@@ -193,30 +230,26 @@ ALTER TABLE order_items ADD CONSTRAINT order_items_book_id_fk
 FOREIGN KEY (book_id) REFERENCES book(book_id);
 
 
-
-
-CREATE TABLE shipment_items(
-   shipment_id            NUMBER(10),
-   shipment_status        VARCHAR2(10),
-   shipment_date          DATE,
-   order_id NUMBER(10)    NOT NULL,
-   item_id  NUMBER(5)     NOT NULL,
-   quantity_shipped NUMBER(5)     NOT NULL
+CREATE TABLE customer_reviews(
+   cust_id  NUMBER(10)    NOT NULL,
+   book_id  NUMBER(10)    NOT NULL,
+   ue_moderation_status      VARCHAR2(10) DEFAULT 'Awaiting' CHECK (ue_moderation_status IN ('Awaiting','Cleared','Change Requested')) NOT NULL,
+   ue_moderation_comment     VARCHAR2(255) NULL,
+   date_last_edited       DATE DEFAULT SYSDATE NOT NULL,
+   ue_review_text   VARCHAR2(4000) NOT NULL
 );
 
-ALTER TABLE shipment_items ADD CONSTRAINT shipment_items_pk
-PRIMARY KEY (shipment_id)
 
-ALTER TABLE shipment_items ADD CONSTRAINT ship_items_ord_itm_fk
-FOREIGN KEY (order_id, item_id) REFERENCES order_items(order_id, item_id);
+ALTER TABLE customer_reviews ADD CONSTRAINT customer_reviews_pk
+PRIMARY KEY (book_id, cust_id);
 
+CREATE INDEX customer_reviews_cust_id ON customer_reviews(cust_id);
 
+ALTER TABLE customer_reviews ADD CONSTRAINT customer_reviews_book_fk
+FOREIGN KEY (book_id) REFERENCES book(book_id);
 
-
-
-
-
-
+ALTER TABLE customer_reviews ADD CONSTRAINT customer_reviews_cust_fk
+FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
 
 
 
@@ -228,6 +261,15 @@ FOREIGN KEY (order_id, item_id) REFERENCES order_items(order_id, item_id);
 
 
 
+
+
+
+
+
+
+
+
+@master_ss_logs.sql
 
 
 

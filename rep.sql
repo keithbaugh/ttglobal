@@ -15,7 +15,7 @@ FROM (
    connect by prior t.constraint_name = t.r_constraint_name
 ) 
 GROUP BY table_name
-ORDER BY 2 
+ORDER BY 3 
 /
 
 drop table temp_refs
