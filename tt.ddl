@@ -4,7 +4,7 @@ DROP TABLE category cascade constraints;
 DROP TABLE category_info cascade constraints;
 DROP TABLE book cascade constraints;
 DROP TABLE book_info cascade constraints;
-DROP TABLE book_prices cascade constraints;
+DROP TABLE prices cascade constraints;
 DROP TABLE book_categories cascade constraints;
 DROP TABLE customer cascade constraints;
 DROP TABLE customer_addresses cascade constraints;
@@ -92,15 +92,19 @@ REFERENCES translation_status(status_id);
 
 
 
-CREATE TABLE book_prices(
+CREATE TABLE prices(
    book_id               NUMBER(10)  NOT NULL,
    uv_price              NUMBER(8,2) NOT NULL,
    price_valid_from      DATE        NOT NULL
 );
 
 
-ALTER TABLE book_prices ADD CONSTRAINT book_prices_pk 
+ALTER TABLE prices ADD CONSTRAINT prices_pk 
 PRIMARY KEY(book_id,price_valid_from);
+
+ALTER TABLE prices ADD CONSTRAINT prices_book_fk FOREIGN KEY(book_id)
+REFERENCES book(book_id);
+
 
 
 CREATE TABLE book_categories(
@@ -137,13 +141,21 @@ ALTER TABLE customer ADD CONSTRAINT customer_uq UNIQUE (username);
 
 CREATE TABLE customer_addresses(
    cust_id      NUMBER(10) NOT NULL,
-   view_order   NUMBER(5)  NOT NULL,
+   display_order   NUMBER(5)  NOT NULL,
    address_type CHAR(1) CHECK(address_type  IN ('B','S')) NOT NULL,
-   default_address CHAR(1) CHECK(default_address IN ('Y','N'))
+   default_address CHAR(1) CHECK(default_address IN ('Y','N')),
+   ue_address_line_1        VARCHAR2(100),
+   ue_address_line_2        VARCHAR2(100),
+   ue_address_line_3        VARCHAR2(100),
+   ue_address_line_4        VARCHAR2(100),
+   ue_address_city          VARCHAR2(100),
+   ue_address_region        VARCHAR2(100),
+   ue_address_country       VARCHAR2(100),
+   ue_address_postzip_code  VARCHAR2(100)
 );
 
 ALTER TABLE customer_addresses ADD CONSTRAINT cust_pk 
-PRIMARY KEY (cust_id, view_order) 
+PRIMARY KEY (cust_id, display_order) 
 DEFERRABLE INITIALLY DEFERRED;
 
 ALTER TABLE customer_addresses ADD CONSTRAINT cust_add_cust_fk
