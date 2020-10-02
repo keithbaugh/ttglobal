@@ -14,6 +14,14 @@ DROP TABLE payment_methods cascade constraints;
 DROP TABLE similar_books cascade constraints;
 DROP TABLE customer_reviews cascade constraints;
 
+DROP  sequence seq_book_id;
+DROP  sequence seq_cust_id;
+DROP  sequence seq_cat_id;
+DROP  sequence seq_item_id;
+DROP  sequence seq_lang_id;
+DROP  sequence seq_order_id;
+
+
 
 
 CREATE TABLE languages(
@@ -49,7 +57,7 @@ CREATE TABLE category_info(
    cat_id             NUMBER(5) NOT NULL,
    lang_id                 NUMBER(3) NOT NULL,
    uv_category_title       VARCHAR2(100) NOT NULL,
-   uv_category_description VARCHAR2(100) NOT NULL,
+   uv_category_description VARCHAR2(100),
    translation_status_id   NUMBER(2) NOT NULL
 );
 
@@ -277,7 +285,7 @@ FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
 
 
 
-@master_ss_logs.sql
+@schema/master_ss_logs.sql
 
 
 

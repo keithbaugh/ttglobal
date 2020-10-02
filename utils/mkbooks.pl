@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-open(IN, "ttbooks.raw") or die;
+open(IN, "sample_data/ttbooks.raw") or die;
 
 my ($auth, $isbn, $title);
 

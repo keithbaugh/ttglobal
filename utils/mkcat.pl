@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-open(IN, "cats.raw") or die;
+open(IN, "sample_data/cats.raw") or die;
 
 my ($cat, $catp);
 
@@ -33,7 +33,7 @@ while (<IN>){
       print "PROMPT adding: $seq - $parent - $level = $txt\n";
       $parent = 'NULL' if $parent eq '';
       print "INSERT INTO category(cat_id, parent_cat_id) VALUES ($seq, $parent);\n";
-      print "INSERT INTO category_info(cat_id, lang_id, uv_category_description, translation_status_id) VALUES ($seq, 1, '$text', 1);\n";
+      print "INSERT INTO category_info(cat_id, lang_id, uv_category_title, translation_status_id) VALUES ($seq, 1, '$txt', 1);\n";
       $last_level = $level;
       $last_seq = $seq;
    }
