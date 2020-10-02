@@ -33,14 +33,22 @@ CREATE TABLE translation_status(
 ALTER TABLE translation_status ADD CONSTRAINT xlation_status_pk PRIMARY KEY (status_id);
 
 CREATE TABLE category(
-   cat_id  NUMBER(5)
+   cat_id  NUMBER(5) NOT NULL,
+   parent_cat_id  NUMBER(5)
 );
 
 ALTER TABLE category ADD CONSTRAINT category_pk PRIMARY KEY (cat_id);
 
+ALTER TABLE category ADD CONSTRAINT category_parent_fk FOREIGN KEY (parent_cat_id)
+REFERENCES category(cat_id);
+
+CREATE INDEX category_parent_idx ON category(parent_cat_id);
+
+
 CREATE TABLE category_info(
    cat_id             NUMBER(5) NOT NULL,
    lang_id                 NUMBER(3) NOT NULL,
+   uv_category_title       VARCHAR2(100) NOT NULL,
    uv_category_description VARCHAR2(100) NOT NULL,
    translation_status_id   NUMBER(2) NOT NULL
 );
@@ -72,12 +80,12 @@ ALTER TABLE book ADD CONSTRAINT book_pk PRIMARY KEY (book_id);
 CREATE TABLE book_info(
    book_id            NUMBER(10) NOT NULL,
    lang_id            NUMBER(3)  NOT NULL,
-   sale_status        VARCHAR2(9) CHECK (sale_status IN ('AVAILABLE','OFFLINE')),
+   sale_status        VARCHAR2(9) CHECK (sale_status IN ('ONSALE','AVAILABLE','OFFLINE')),
    translation_status_id  NUMBER(2),
    --
    -- User Visible Columns - (UV prefix)
    --
-   uv_title           VARCHAR2(100) NOT NULL,
+   uv_title           VARCHAR2(255) NOT NULL,
    uv_description     VARCHAR2(4000),
    uv_description_big CLOB
 );
@@ -274,16 +282,10 @@ FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+create sequence seq_book_id  start with 1 increment by 1 nomaxvalue nocycle;
+create sequence seq_cust_id  start with 1 increment by 1 nomaxvalue nocycle;
+create sequence seq_cat_id   start with 1 increment by 1 nomaxvalue nocycle;
+create sequence seq_item_id  start with 1 increment by 1 nomaxvalue nocycle;
+create sequence seq_lang_id  start with 1 increment by 1 nomaxvalue nocycle;
+create sequence seq_order_id start with 1 increment by 1 nomaxvalue nocycle;
 

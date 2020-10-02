@@ -13,9 +13,9 @@ while (<IN>){
       chomp($title);
       $title =~ s/'/''/g;
       $author =~ s/'/''/g;
-      print "INSERT INTO books (book_id, isbn, author) VALUES (book_id_seq.nextval, '$isbn','$author');\n";
+      print "INSERT INTO book (book_id, isbn, uv_author) VALUES (seq_book_id.nextval, '$isbn','$author');\n";
       print "INSERT INTO book_info(book_id, lang_id, sale_status, translation_status_id, uv_title, uv_description)\n";
-      print "VALUES(book_id_seq.curval, 1, 'ONSALE', 1, '$title', 'Description for book with title: $title');\n";
+      print "VALUES(seq_book_id.currval, 1, 'ONSALE', 1, '$title', 'Description for book with title: $title');\n";
    }
 }
 
