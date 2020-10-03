@@ -12,6 +12,7 @@ DROP TABLE customer_orders cascade constraints;
 DROP TABLE order_items cascade constraints;
 DROP TABLE payment_methods cascade constraints;
 DROP TABLE similar_books cascade constraints;
+DROP TABLE recomm_books cascade constraints;
 DROP TABLE customer_reviews cascade constraints;
 
 DROP  sequence seq_book_id;
@@ -110,18 +111,18 @@ ALTER TABLE book_info ADD CONSTRAINT book_info_xlat_stat_fk FOREIGN KEY(translat
 REFERENCES translation_status(status_id);
 
 
-CREATE TABLE similar_books(
+CREATE TABLE recomm_books(
    book_id            NUMBER(10) NOT NULL,
-   similar_book_id    NUMBER(10) NOT NULL,
-   similarity_score   NUMBER(1)  NOT NULL
+   recomm_book_id    NUMBER(10) NOT NULL,
+   recomm_score   NUMBER(1)  NOT NULL
 );
 
-ALTER TABLE similar_books ADD CONSTRAINT similar_books_pk PRIMARY KEY (book_id,similar_book_id);
+ALTER TABLE recomm_books ADD CONSTRAINT recomm_books_pk PRIMARY KEY (book_id,recomm_book_id);
 
-ALTER TABLE similar_books ADD CONSTRAINT similar_books_src_fk FOREIGN KEY(book_id) 
+ALTER TABLE recomm_books ADD CONSTRAINT recomm_books_src_fk FOREIGN KEY(book_id) 
 REFERENCES book(book_id);
 
-ALTER TABLE similar_books ADD CONSTRAINT similar_books_trg_fk FOREIGN KEY(similar_book_id) 
+ALTER TABLE recomm_books ADD CONSTRAINT recomm_books_trg_fk FOREIGN KEY(recomm_book_id) 
 REFERENCES book(book_id);
 
 
@@ -160,8 +161,8 @@ REFERENCES book(book_id);
 CREATE TABLE customer(
    cust_id        NUMBER(10) NOT NULL,
    username       VARCHAR2(50) NOT NULL,
-   password_hash  VARCHAR2(50) NOT NULL,
-   account_created    DATE NOT NULL,
+   password_hash  VARCHAR2(50),
+   account_created    DATE DEFAULT SYSDATE NOT NULL,
    account_status VARCHAR2(20) CHECK(account_status IN ('REGISTERED','CONFIRMED','VERIFIED','QUARANTINED')) NOT NULL,
    email_address  VARCHAR2(150) NOT NULL,
    ue_title       VARCHAR2(20) NULL,
@@ -173,6 +174,8 @@ CREATE TABLE customer(
 
 ALTER TABLE customer ADD CONSTRAINT customer_pk PRIMARY KEY (cust_id);
 ALTER TABLE customer ADD CONSTRAINT customer_uq UNIQUE (username);
+CREATE INDEX customer_username_idx ON customer(username);
+
 
 
 
@@ -213,7 +216,7 @@ PRIMARY KEY (payment_method_id);
 CREATE TABLE customer_orders(
    order_id NUMBER(10)    NOT NULL,
    cust_id  NUMBER(10)    NOT NULL,
-   date_order_placed      DATE NOT NULL,
+   date_order_placed      TIMESTAMP NOT NULL DEFAULT SYSTIMESTAMP,
    total_order_price      NUMBER(8,2) NOT NULL,
    payment_method_id      NUMBER(5) NOT NULL,
    payment_status         VARCHAR2(20) NOT NULL
