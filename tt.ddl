@@ -11,7 +11,6 @@ DROP TABLE customer_addresses cascade constraints;
 DROP TABLE customer_orders cascade constraints;
 DROP TABLE order_items cascade constraints;
 DROP TABLE payment_methods cascade constraints;
-DROP TABLE similar_books cascade constraints;
 DROP TABLE recomm_books cascade constraints;
 DROP TABLE customer_reviews cascade constraints;
 
@@ -152,7 +151,7 @@ ALTER TABLE book_categories ADD CONSTRAINT book_categories_pk PRIMARY KEY (book_
 ALTER TABLE book_categories ADD CONSTRAINT book_cat_cat_fk FOREIGN KEY(cat_id) 
 REFERENCES category(cat_id);
 
-CREATE INDEX book_categories_cat_id_idx ON book_categories(cust_id);
+CREATE INDEX book_categories_cat_id_idx ON book_categories(cat_id);
 
 ALTER TABLE book_categories ADD CONSTRAINT book_cat_book_id_fk FOREIGN KEY(book_id) 
 REFERENCES book(book_id);
@@ -173,8 +172,7 @@ CREATE TABLE customer(
 );
 
 ALTER TABLE customer ADD CONSTRAINT customer_pk PRIMARY KEY (cust_id);
-ALTER TABLE customer ADD CONSTRAINT customer_uq UNIQUE (username);
-CREATE INDEX customer_username_idx ON customer(username);
+ALTER TABLE customer ADD CONSTRAINT customer_uk UNIQUE (username);
 
 
 
@@ -216,7 +214,7 @@ PRIMARY KEY (payment_method_id);
 CREATE TABLE customer_orders(
    order_id NUMBER(10)    NOT NULL,
    cust_id  NUMBER(10)    NOT NULL,
-   date_order_placed      TIMESTAMP NOT NULL DEFAULT SYSTIMESTAMP,
+   date_order_placed      TIMESTAMP WITH TIME ZONE DEFAULT SYSTIMESTAMP NOT NULL,
    total_order_price      NUMBER(8,2) NOT NULL,
    payment_method_id      NUMBER(5) NOT NULL,
    payment_status         VARCHAR2(20) NOT NULL
