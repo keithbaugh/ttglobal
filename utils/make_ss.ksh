@@ -5,6 +5,8 @@ function get_order
 {
 sqlplus keith/keith@schmast <<EOF
 
+purge recyclebin;
+
 create table temp_refs as select table_name, constraint_name, CAST(NULL as VARCHAR2(30)) as r_constraint_name   from user_constraints b
 where constraint_type like 'P'
 /
@@ -49,6 +51,15 @@ do
 done
 
 echo "
+BEGIN
+   dbms_refresh.destroy(
+      name=> 'bookstore_copy_group'
+   );
+EXCEPTION WHEN OTHERS THEN
+   NULL;
+END;
+/
+
 BEGIN
 
    dbms_refresh.make(

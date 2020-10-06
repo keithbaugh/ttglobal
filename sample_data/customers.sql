@@ -34,3 +34,14 @@ FROM  customer
 /
 /
 
+
+BEGIN
+   FOR rec IN (
+      SELECT rowid as rid, cust_id, ROW_NUMBER() over (partition by cust_id order by rowid) as new_display_order
+      FROM customer_addresses 
+      ORDER BY cust_id, display_order
+   ) LOOP
+      UPDATE customer_addresses SET display_order = rec.new_display_order WHERE rowid = rec.rid;
+   END LOOP;
+END;
+/

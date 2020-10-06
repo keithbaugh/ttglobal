@@ -11,4 +11,5 @@ CREATE SNAPSHOT LOG ON languages;
 CREATE SNAPSHOT LOG ON order_items;
 CREATE SNAPSHOT LOG ON payment_methods;
 CREATE SNAPSHOT LOG ON prices;
+CREATE SNAPSHOT LOG ON recomm_books;
 CREATE SNAPSHOT LOG ON translation_status;

@@ -1,3 +1,15 @@
+define MASTERUSERNAME=keith
+define MASTERPASSWORD=keith
+define READONLYUSERNAME=keith
+define READONLYPASSWORD=keith
+
+define MASTERDB=schmast
+define READONLYDB=sch11
+
+
+
+connect &&MASTERUSERNAME/&&MASTERPASSWORD@&&MASTERDB
+
 DROP TABLE languages cascade constraints;
 DROP TABLE translation_status cascade constraints;
 DROP TABLE category cascade constraints;
@@ -304,3 +316,26 @@ create sequence seq_order_id start with 1 increment by 1 nomaxvalue nocycle;
 
 
 
+
+connect &&READONLYUSERNAME/&&READONLYPASSWORD@&&READONLYDB
+
+drop materialized view BOOK;
+drop materialized view BOOK_CATEGORIES;
+drop materialized view BOOK_INFO;
+drop materialized view CATEGORY;
+drop materialized view CATEGORY_INFO;
+drop materialized view CUSTOMER;
+drop materialized view CUSTOMER_ADDRESSES;
+drop materialized view CUSTOMER_ORDERS;
+drop materialized view CUSTOMER_REVIEWS;
+drop materialized view LANGUAGES;
+drop materialized view ORDER_ITEMS;
+drop materialized view PAYMENT_METHODS;
+drop materialized view TRANSLATION_STATUS;
+drop materialized view RECOMM_BOOKS;
+drop materialized view PRICES;
+
+
+@schema/read_only_ss.sql
+
+connect &&MASTERUSERNAME/&&MASTERPASSWORD@&&MASTERDB
