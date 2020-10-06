@@ -165,8 +165,8 @@ CREATE TABLE customer(
    account_status VARCHAR2(20) CHECK(account_status IN ('REGISTERED','CONFIRMED','VERIFIED','QUARANTINED')) NOT NULL,
    email_address  VARCHAR2(150) NOT NULL,
    ue_title       VARCHAR2(20) NULL,
-   ue_first_name  VARCHAR2(50) NULL,
-   ue_middle_initials  VARCHAR2(20) NOT NULL,
+   ue_first_name  VARCHAR2(50) NOT NULL,
+   ue_middle_initials  VARCHAR2(20),
    ue_last_name   VARCHAR2(50) NOT NULL,
    ue_review_pseudonym   VARCHAR2(50) NOT NULL
 );
@@ -298,4 +298,9 @@ create sequence seq_cat_id   start with 1 increment by 1 nomaxvalue nocycle;
 create sequence seq_item_id  start with 1 increment by 1 nomaxvalue nocycle;
 create sequence seq_lang_id  start with 1 increment by 1 nomaxvalue nocycle;
 create sequence seq_order_id start with 1 increment by 1 nomaxvalue nocycle;
+
+
+@schema/func_get_books_recomm.sql
+
+
 
