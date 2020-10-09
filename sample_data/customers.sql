@@ -8,23 +8,6 @@ INSERT INTO customer(cust_id, username, password_hash, account_created, account_
 VALUES(seq_cust_id.nextval, 'hopper', NULL, sysdate, 'REGISTERED','Hopper@gmail.com','Sgt','David',NULL,'Hopper','LtHopper');
 
 
-
-INSERT INTO customer_addresses(cust_id, display_order, address_type, default_address, ue_address_line_1, ue_address_line_2, ue_address_line_3, ue_address_line_4, ue_address_city, ue_address_region, ue_address_country, ue_address_postzip_code)
-SELECT cust_id, 1, 'S','Y', to_char(trunc(dbms_random.value(1,1000)))||' '||to_char(sysdate+dbms_random.value(0,1000),'Day')||' Street','Lorem Ipsum Village','Dolor Sit Amet',NULL,'Lorem City','Romeenicus','USA','LE33 2TD' 
-FROM customer
-/
-
-INSERT INTO customer_addresses(cust_id, display_order, address_type, default_address, ue_address_line_1, ue_address_line_2, ue_address_line_3, ue_address_line_4, ue_address_city, ue_address_region, ue_address_country, ue_address_postzip_code)
-SELECT cust_id, 1, 'B','Y', to_char(trunc(dbms_random.value(1,1000)))||' '||to_char(sysdate+dbms_random.value(0,1000),'Day')||' Street','Lorem Ipsum Village','Dolor Sit Amet',NULL,'Lorem City','Romeenicus','USA','LE33 2TD' 
-FROM customer
-/
-
-INSERT INTO customer_addresses(cust_id, display_order, address_type, default_address, ue_address_line_1, ue_address_line_2, ue_address_line_3, ue_address_line_4, ue_address_city, ue_address_region, ue_address_country, ue_address_postzip_code)
-SELECT cust_id, 2, 'S','Y', to_char(trunc(dbms_random.value(1,1000)))||' '||to_char(sysdate+dbms_random.value(0,1000),'Day')||' Street','Lorem Ipsum Village','Dolor Sit Amet',NULL,'Lorem City','Romeenicus','USA','LE33 2TD' 
-FROM customer
-/
-
-
 INSERT INTO customer
 SELECT seq_cust_id.nextval, username||to_char(seq_cust_id.nextval), password_hash, sysdate, account_status, email_address, ue_title, ue_first_name, ue_middle_initials, ue_last_name, ue_review_pseudonym 
 FROM  customer
@@ -33,6 +16,24 @@ FROM  customer
 /
 /
 /
+
+
+INSERT INTO customer_addresses(addr_id, cust_id, display_order, address_type, default_address, ue_address_line_1, ue_address_line_2, ue_address_line_3, ue_address_line_4, ue_address_city, ue_address_region, ue_address_country, ue_address_postzip_code)
+SELECT seq_addr_id.nextval, cust_id, 1, 'S','Y', to_char(trunc(dbms_random.value(1,1000)))||' '||to_char(sysdate+dbms_random.value(0,1000),'Day')||' Street','Lorem Ipsum Village','Dolor Sit Amet',NULL,'Lorem City','Romeenicus','USA','LE33 2TD' 
+FROM customer
+/
+
+INSERT INTO customer_addresses(addr_id, cust_id, display_order, address_type, default_address, ue_address_line_1, ue_address_line_2, ue_address_line_3, ue_address_line_4, ue_address_city, ue_address_region, ue_address_country, ue_address_postzip_code)
+SELECT seq_addr_id.nextval, cust_id, 1, 'B','Y', to_char(trunc(dbms_random.value(1,1000)))||' '||to_char(sysdate+dbms_random.value(0,1000),'Day')||' Street','Lorem Ipsum Village','Dolor Sit Amet',NULL,'Lorem City','Romeenicus','USA','LE33 2TD' 
+FROM customer
+/
+
+INSERT INTO customer_addresses(addr_id, cust_id, display_order, address_type, default_address, ue_address_line_1, ue_address_line_2, ue_address_line_3, ue_address_line_4, ue_address_city, ue_address_region, ue_address_country, ue_address_postzip_code)
+SELECT seq_addr_id.nextval, cust_id, 2, 'S','Y', to_char(trunc(dbms_random.value(1,1000)))||' '||to_char(sysdate+dbms_random.value(0,1000),'Day')||' Street','Lorem Ipsum Village','Dolor Sit Amet',NULL,'Lorem City','Romeenicus','USA','LE33 2TD' 
+FROM customer
+/
+
+
 
 
 BEGIN

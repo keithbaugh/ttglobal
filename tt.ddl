@@ -32,6 +32,7 @@ DROP  sequence seq_cat_id;
 DROP  sequence seq_item_id;
 DROP  sequence seq_lang_id;
 DROP  sequence seq_order_id;
+DROP  sequence seq_addr_id;
 
 
 
@@ -191,6 +192,7 @@ ALTER TABLE customer ADD CONSTRAINT customer_uk UNIQUE (username);
 
 
 CREATE TABLE customer_addresses(
+   addr_id      NUMBER(10) NOT NULL,
    cust_id      NUMBER(10) NOT NULL,
    display_order   NUMBER(5)  NOT NULL,
    address_type CHAR(1) CHECK(address_type  IN ('B','S')) NOT NULL,
@@ -206,8 +208,7 @@ CREATE TABLE customer_addresses(
 );
 
 ALTER TABLE customer_addresses ADD CONSTRAINT cust_pk 
-PRIMARY KEY (cust_id, display_order) 
-DEFERRABLE INITIALLY DEFERRED;
+PRIMARY KEY (addr_id);
 
 ALTER TABLE customer_addresses ADD CONSTRAINT cust_add_cust_fk
 FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
@@ -215,7 +216,7 @@ FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
 
 CREATE TABLE payment_methods(
    payment_method_id        NUMBER(5) NOT NULL,
-   payment_method_code      VARCHAR2(4) NOT NULL,
+   payment_method_code      VARCHAR2(6) NOT NULL,
    uv_payment_method_name   VARCHAR2(30) NOT NULL
 );
 
@@ -229,7 +230,11 @@ CREATE TABLE customer_orders(
    date_order_placed      TIMESTAMP WITH TIME ZONE DEFAULT SYSTIMESTAMP NOT NULL,
    total_order_price      NUMBER(8,2) NOT NULL,
    payment_method_id      NUMBER(5) NOT NULL,
-   payment_status         VARCHAR2(20) NOT NULL
+   payment_status         VARCHAR2(20) NOT NULL,
+   card_number            VARCHAR2(64) NOT NULL,
+   expiry_date            VARCHAR2(4) NOT NULL,
+   shipping_addr_id       NUMBER(10) NOT NULL,
+   billing_addr_id        NUMBER(10) NOT NULL
 );
 
 ALTER TABLE customer_orders ADD CONSTRAINT cust_ord_pk 
@@ -240,6 +245,12 @@ FOREIGN KEY (cust_id) REFERENCES customer(cust_id);
 
 ALTER TABLE customer_orders ADD CONSTRAINT customer_orderd_paymet_fk
 FOREIGN KEY (payment_method_id) REFERENCES payment_methods(payment_method_id);
+
+ALTER TABLE customer_orders ADD CONSTRAINT cust_ord_ship_add_fk
+FOREIGN KEY (shipping_addr_id) REFERENCES customer_addresses(addr_id);
+
+ALTER TABLE customer_orders ADD CONSTRAINT cust_ord_bill_add_fk
+FOREIGN KEY (billing_addr_id) REFERENCES customer_addresses(addr_id);
 
 
 CREATE TABLE order_items(
@@ -310,6 +321,7 @@ create sequence seq_cat_id   start with 1 increment by 1 nomaxvalue nocycle;
 create sequence seq_item_id  start with 1 increment by 1 nomaxvalue nocycle;
 create sequence seq_lang_id  start with 1 increment by 1 nomaxvalue nocycle;
 create sequence seq_order_id start with 1 increment by 1 nomaxvalue nocycle;
+create sequence seq_addr_id  start with 1 increment by 1 nomaxvalue nocycle;
 
 
 @schema/func_get_books_recomm.sql
