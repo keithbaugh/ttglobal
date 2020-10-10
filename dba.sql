@@ -1,29 +1,53 @@
--- As sys...
-connect sys/port@schmast as sysdba;
+--
+-- Main DBA activies for building the Bookshop Schemas and granting system privileges...
+--
 
-create or replace directory strrep_scripts   AS '/u01/app/oracle/db_dirs/strrep_scripts';
+-- Source all the run-time build parameters...
 
-create or replace directory strrep_data_pump_out AS '/u01/app/oracle/db_dirs/strrep_datapump_out';
+@@envs.sql
 
+set verify off
 
-create user str_admin identified by str_admin default tablespace adapt_data;
-
-
-grant read  on directory strrep_scripts to str_admin;
-grant write on directory strrep_scripts to str_admin;
-
-grant read  on directory strrep_data_pump_out to str_admin;
-grant write on directory strrep_data_pump_out to str_admin;
-
-grant execute on dbms_streams_adm to str_admin;
-
-grant create session       to str_admin;
-grant create database link to str_admin;
+--                  _                _ _       
+--    _ __  __ _ __| |_ ___ _ _   __(_) |_ ___ 
+--   | '  \/ _` (_-<  _/ -_) '_| (_-< |  _/ -_)
+--   |_|_|_\__,_/__/\__\___|_|   /__/_|\__\___|
+--  
 
 
-connect str_admin/str_admin@schmast
+connect sys/&&SYSPASSMASTER@&&MASTERDB as sysdba;
 
-create database link sch11.emea.hays.loc connect to keith identified by keith using '(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = hrraxdv2032.emea.hays.loc)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = SCH11.emea.hays.loc)))'
-/
+drop user &&MASTERUSERNAME cascade;
+
+create user &&MASTERUSERNAME identified by &&MASTERPASSWORD default tablespace &&DEFTABLESPACE;
+
+grant create session        to  &&MASTERUSERNAME;
+grant create table          to  &&MASTERUSERNAME;
+grant create procedure      to  &&MASTERUSERNAME;
+grant create database link  to  &&MASTERUSERNAME;
+grant create sequence       to  &&MASTERUSERNAME;
+alter user &&MASTERUSERNAME quota unlimited on &&DEFTABLESPACE;
+
+
+--                    _            _           _ _       
+--    _ _ ___ __ _ __| |  ___ _ _ | |_  _   __(_) |_ ___ 
+--   | '_/ -_) _` / _` | / _ \ ' \| | || | (_-< |  _/ -_)
+--   |_| \___\__,_\__,_| \___/_||_|_|\_, | /__/_|\__\___|
+--                                   |__/    
+
+connect sys/&&SYSPASSREADONLY@&&READONLYDB as sysdba;
+
+drop user &&READONLYUSERNAME cascade;
+
+create user &&READONLYUSERNAME identified by &&READONLYPASSWORD default tablespace &&DEFTABLESPACE;
+
+grant create session        to  &&READONLYUSERNAME;
+grant create table          to  &&READONLYUSERNAME;
+grant create procedure      to  &&READONLYUSERNAME;
+grant create snapshot       to  &&READONLYUSERNAME;
+grant create database link  to  &&READONLYUSERNAME;
+grant create sequence       to  &&READONLYUSERNAME;
+alter user &&READONLYUSERNAME quota unlimited on &&DEFTABLESPACE;
+
 
 

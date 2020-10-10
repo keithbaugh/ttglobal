@@ -1,39 +1,10 @@
-define MASTERUSERNAME=keith
-define MASTERPASSWORD=keith
-define READONLYUSERNAME=keith
-define READONLYPASSWORD=keith
 
-define MASTERDB=schmast
-define READONLYDB=sch11
-
+@@envs.sql
 
 
 connect &&MASTERUSERNAME/&&MASTERPASSWORD@&&MASTERDB
 
-DROP TABLE languages cascade constraints;
-DROP TABLE translation_status cascade constraints;
-DROP TABLE category cascade constraints;
-DROP TABLE category_info cascade constraints;
-DROP TABLE book cascade constraints;
-DROP TABLE book_info cascade constraints;
-DROP TABLE prices cascade constraints;
-DROP TABLE book_categories cascade constraints;
-DROP TABLE customer cascade constraints;
-DROP TABLE customer_addresses cascade constraints;
-DROP TABLE customer_orders cascade constraints;
-DROP TABLE order_items cascade constraints;
-DROP TABLE payment_methods cascade constraints;
-DROP TABLE recomm_books cascade constraints;
-DROP TABLE customer_reviews cascade constraints;
-
-DROP  sequence seq_book_id;
-DROP  sequence seq_cust_id;
-DROP  sequence seq_cat_id;
-DROP  sequence seq_item_id;
-DROP  sequence seq_lang_id;
-DROP  sequence seq_order_id;
-DROP  sequence seq_addr_id;
-
+CREATE DATABASE LINK &&READONLYDB connect to &&READONLYUSERNAME identified by &&READONLYPASSWORD USING 'TNS:&&READONLYDB';
 
 
 
@@ -325,28 +296,17 @@ create sequence seq_addr_id  start with 1 increment by 1 nomaxvalue nocycle;
 
 
 @schema/func_get_books_recomm.sql
+@schema/func_get_book_price_at_time.sql
 
 
 
 
 connect &&READONLYUSERNAME/&&READONLYPASSWORD@&&READONLYDB
 
-drop materialized view BOOK;
-drop materialized view BOOK_CATEGORIES;
-drop materialized view BOOK_INFO;
-drop materialized view CATEGORY;
-drop materialized view CATEGORY_INFO;
-drop materialized view CUSTOMER;
-drop materialized view CUSTOMER_ADDRESSES;
-drop materialized view CUSTOMER_ORDERS;
-drop materialized view CUSTOMER_REVIEWS;
-drop materialized view LANGUAGES;
-drop materialized view ORDER_ITEMS;
-drop materialized view PAYMENT_METHODS;
-drop materialized view TRANSLATION_STATUS;
-drop materialized view RECOMM_BOOKS;
-drop materialized view PRICES;
 
+
+
+CREATE DATABASE LINK &&MASTERDB connect to &&MASTERUSERNAME identified by &&MASTERPASSWORD USING 'TNS:&&MASTERDB';
 
 @schema/read_only_ss.sql
 

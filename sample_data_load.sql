@@ -9,9 +9,12 @@ set define off
 @sample_data/prices
 @sample_data/recomm_books
 @sample_data/bookcats
+@sample_data/custord
 
 
 
 commit
 /
 
+
+set define on

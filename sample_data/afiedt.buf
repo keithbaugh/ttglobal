@@ -1,3 +1,2 @@
-INSERT INTO recomm_books(book_id, recomm_book_id, recomm_score)
-SELECT book_id, TRUNC(dbms_random.value(0,39)), trunc(dbms_random.value(0,9)) from book
+select t.*,  func_get_book_price_at_time(t.book_id, sysdate) from order_items t
 /

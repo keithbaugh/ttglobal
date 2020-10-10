@@ -38,11 +38,18 @@ FROM customer
 
 BEGIN
    FOR rec IN (
-      SELECT rowid as rid, cust_id, ROW_NUMBER() over (partition by cust_id order by rowid) as new_display_order
+      SELECT rowid as rid, cust_id, ROW_NUMBER() over (partition by cust_id, address_type order by rowid) as new_display_order
       FROM customer_addresses 
       ORDER BY cust_id, display_order
    ) LOOP
-      UPDATE customer_addresses SET display_order = rec.new_display_order WHERE rowid = rec.rid;
+
+      -- Clean up the display ordered (per customer and per address_type, 1..n for each)  
+      -- And set ONE and only ONE as the default_address.
+      UPDATE customer_addresses 
+      SET 
+         display_order = rec.new_display_order, 
+         default_address = DECODE(rec.new_display_order,1,'Y','N') 
+      WHERE rowid = rec.rid;
    END LOOP;
 END;
 /
