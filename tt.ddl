@@ -63,10 +63,16 @@ CREATE TABLE book(
    book_id       NUMBER(10)   NOT NULL,
    sales_status  VARCHAR2(10) DEFAULT 'ONSALE' CHECK(sales_status IN ('ONSALE','BACKORDER','WITHDRAWN')) NOT NULL,
    isbn          VARCHAR2(17) NOT NULL,
+   cat_id        NUMBER(10)   NOT NULL,
    uv_author     VARCHAR2(100) NOT NULL
 );
 
 ALTER TABLE book ADD CONSTRAINT book_pk PRIMARY KEY (book_id);
+
+ALTER TABLE book ADD CONSTRAINT book_cat_fk FOREIGN KEY(cat_id)
+REFERENCES category(cat_id);
+
+
 
 
 CREATE TABLE book_info(
@@ -121,23 +127,6 @@ ALTER TABLE prices ADD CONSTRAINT prices_pk
 PRIMARY KEY(book_id,price_valid_from);
 
 ALTER TABLE prices ADD CONSTRAINT prices_book_fk FOREIGN KEY(book_id)
-REFERENCES book(book_id);
-
-
-
-CREATE TABLE book_categories(
-   book_id    NUMBER(10) NOT NULL,
-   cat_id     NUMBER(5)  NOT NULL
-);
-
-ALTER TABLE book_categories ADD CONSTRAINT book_categories_pk PRIMARY KEY (book_id, cat_id);
-
-ALTER TABLE book_categories ADD CONSTRAINT book_cat_cat_fk FOREIGN KEY(cat_id) 
-REFERENCES category(cat_id);
-
-CREATE INDEX book_categories_cat_id_idx ON book_categories(cat_id);
-
-ALTER TABLE book_categories ADD CONSTRAINT book_cat_book_id_fk FOREIGN KEY(book_id) 
 REFERENCES book(book_id);
 
 

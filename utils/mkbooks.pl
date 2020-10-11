@@ -1,5 +1,10 @@
 #!/usr/bin/perl
 
+my $wc = qx(wc sample_data/cats.raw);
+$wc =~ s/^ //;
+
+my ($catmax, $dummy) = split /\s+/, $wc;
+
 open(IN, "sample_data/ttbooks.raw") or die;
 
 my ($auth, $isbn, $title);
@@ -13,7 +18,7 @@ while (<IN>){
       chomp($title);
       $title =~ s/'/''/g;
       $author =~ s/'/''/g;
-      print "INSERT INTO book (book_id, isbn, uv_author) VALUES (seq_book_id.nextval, '$isbn','$author');\n";
+      print "INSERT INTO book (book_id, isbn, uv_author, cat_id) VALUES (seq_book_id.nextval, '$isbn','$author', trunc(dbms_random.value(1,$catmax)));\n";
       print "INSERT INTO book_info(book_id, lang_id, sale_status, translation_status_id, uv_title, uv_description)\n";
       print "VALUES(seq_book_id.currval, 1, 'ONSALE', 1, '$title', 'Description for book with title: $title');\n";
    }
