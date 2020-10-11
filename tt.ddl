@@ -245,8 +245,8 @@ FOREIGN KEY (book_id) REFERENCES book(book_id);
 CREATE TABLE customer_reviews(
    cust_id  NUMBER(10)    NOT NULL,
    book_id  NUMBER(10)    NOT NULL,
-   ue_moderation_status      VARCHAR2(10) DEFAULT 'Awaiting' CHECK (ue_moderation_status IN ('Awaiting','Cleared','Change Requested')) NOT NULL,
-   ue_moderation_comment     VARCHAR2(255) NULL,
+   moderation_status      VARCHAR2(10) DEFAULT 'PENDING' CHECK (moderation_status IN ('PENDING','CLEARED','REJECTED')) NOT NULL,
+   moderation_comment     VARCHAR2(255) NULL,
    date_last_edited       DATE DEFAULT SYSDATE NOT NULL,
    ue_review_text   VARCHAR2(4000) NOT NULL
 );

@@ -1,0 +1,15 @@
+CONFIGURE MAXSETSIZE TO UNLIMITED;
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT '+DG_FLASH';
+CONFIGURE DEVICE TYPE DISK BACKUP TYPE TO COMPRESSED BACKUPSET PARALLELISM 4;
+run {
+  backup incremental level 1 database;
+  backup current controlfile;
+  backup archivelog all not backed up 2 times;
+  backup backupset all not backed up 2 times format '/mnt/adaptBU/adaptBU/RMAN/SCHMAST/%d_%T_%s_%p_%c_incr.backupset';
+  delete obsolete;
+  crosscheck backup of database;
+  delete expired backup;
+  crosscheck archivelog all;
+  delete expired archivelog all;
+}
