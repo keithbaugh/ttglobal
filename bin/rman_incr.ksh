@@ -11,8 +11,13 @@ PATH=$ORACLE_HOME/bin/:/usr/local/bin:/home/oracle/adapt_2010/sch/release_1_0/bi
 
 export ORACLE_SID NLS_DATE_FORMAT ORACLE_HOME NLS_PATH
 
+BINDIR=$(dirname $0)
+
+cd $BINDIR
+
+
 rman <<EOF
 connect target /
-@backup_full.rman
+@backup_incr.rman
 EOF
 
