@@ -9,7 +9,7 @@ VALUES(seq_cust_id.nextval, 'hopper', NULL, sysdate, 'REGISTERED','Hopper@gmail.
 
 
 INSERT INTO customer
-SELECT seq_cust_id.nextval, username||to_char(seq_cust_id.nextval), password_hash, sysdate, account_status, email_address, ue_title, ue_first_name, ue_middle_initials, ue_last_name, ue_review_pseudonym 
+SELECT seq_cust_id.nextval, username||to_char(seq_cust_id.nextval), password_hash, sysdate, account_status, email_address, ue_title, ue_first_name, ue_middle_initials, ue_last_name, ue_review_pseudonym||to_char(rownum + (SELECT count(*) FROM customer)) 
 FROM  customer
 /
 /

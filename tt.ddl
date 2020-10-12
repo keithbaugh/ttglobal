@@ -146,6 +146,7 @@ CREATE TABLE customer(
 
 ALTER TABLE customer ADD CONSTRAINT customer_pk PRIMARY KEY (cust_id);
 ALTER TABLE customer ADD CONSTRAINT customer_uk UNIQUE (username);
+CREATE UNIQUE INDEX customer_pseudoym_idx ON customer(ue_review_pseudonym);
 
 
 
